@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StackRoom — Your records. Your films. Your books. One room.</title>
+<meta name="description" content="StackRoom catalogs your vinyl, your discs, and your bookcase — then gets to know them. AI that reads your shelves, mood mixes cut from your own collection, and a feed of collectors who get it.">
+<meta name="theme-color" content="#0E0E11">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Crect width='1024' height='1024' rx='180' fill='%230E0E11'/%3E%3Crect x='200' y='330' width='110' height='450' rx='26' fill='%2326262E'/%3E%3Crect x='334' y='250' width='110' height='530' rx='26' fill='%233A3A44'/%3E%3Crect x='468' y='292' width='110' height='488' rx='26' fill='%23F0A63C' transform='rotate(7 523 536)'/%3E%3Crect x='614' y='270' width='110' height='510' rx='26' fill='%2354545C'/%3E%3Crect x='748' y='350' width='110' height='430' rx='26' fill='%2326262E'/%3E%3Crect x='160' y='796' width='704' height='26' rx='13' fill='%2326262E'/%3E%3C/svg%3E">
+<meta property="og:title" content="StackRoom — Every shelf you love, in one room.">
+<meta property="og:description" content="Records, films, and books — cataloged, understood, and kept. Coming soon for iPhone & iPad.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://getstackroom.com">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+  :root {
+    --bg: #0E0E11; --card: #17171C; --elevated: #131317; --border: #26262E;
+    --hairline: #1A1A20; --chip: #1E1E24; --text: #F2F1EC; --sub: #8A8A93;
+    --muted: #54545C; --amber: #F0A63C; --on-amber: #17140C; --rose: #E86E8A;
+    --sage: #8FB5A5; --steel: #7CA5B8; --lavender: #B5A5C4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  .lbl { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--amber); }
+  .lbl.rose { color: var(--rose); }
+  h1, h2 { letter-spacing: -0.5px; text-wrap: balance; }
+  a.cta {
+    display: inline-block; background: var(--amber); color: var(--on-amber);
+    text-decoration: none; font-weight: 700; font-size: 14px;
+    padding: 14px 28px; border-radius: 12px;
+  }
+  a.cta.ghost { background: var(--chip); color: var(--text); }
+  a.cta:focus-visible, .faq summary:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+  /* Header */
+  header { padding: 26px 0; border-bottom: 1px solid var(--hairline); }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: 2px; }
+  .brand svg { border-radius: 9px; }
+  nav.top { display: flex; gap: 18px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+  nav.top a { color: var(--sub); text-decoration: none; }
+  nav.top a:hover { color: var(--amber); }
+
+  /* Hero */
+  .hero { padding: 88px 0 72px; }
+  .hero .wrap { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; }
+  .hero h1 { font-size: clamp(34px, 5vw, 52px); margin: 18px 0 14px; line-height: 1.15; }
+  .hero p.lede { color: var(--sub); font-size: 16px; max-width: 46ch; margin: 0 0 32px; }
+  .hero .ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* Phone mock */
+  .phone {
+    width: 300px; margin: 0 auto; background: #000; border-radius: 44px;
+    padding: 12px; border: 1px solid var(--border);
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+  }
+  .phone.sm { width: 250px; border-radius: 38px; padding: 10px; }
+  .screen { background: var(--bg); border-radius: 34px; overflow: hidden; padding: 22px 16px 16px; }
+  .phone.sm .screen { border-radius: 30px; padding: 18px 13px 13px; }
+  .scr-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .scr-head .lbl { color: var(--sub); }
+  .toggle { display: flex; gap: 2px; background: var(--card); border-radius: 99px; padding: 3px; }
+  .toggle span { width: 26px; height: 20px; border-radius: 99px; display: grid; place-items: center; font-size: 10px; }
+  .toggle span.on { background: var(--amber); }
+  .hero-card {
+    background: linear-gradient(135deg, #2A1F08, var(--card)); border: 1px solid var(--border);
+    border-radius: 16px; padding: 14px; margin-bottom: 10px;
+  }
+  .hero-card .np { font-size: 10px; color: var(--amber); letter-spacing: 2px; }
+  .hero-card .title { font-weight: 700; font-size: 15px; margin-top: 6px; font-family: -apple-system, system-ui, sans-serif; }
+  .hero-card .artist { color: var(--sub); font-size: 12px; }
+  .vinyl { float: right; width: 54px; height: 54px; border-radius: 50%;
+    background: radial-gradient(circle at center, var(--amber) 0 18%, #111 19% 100%);
+    border: 1px solid #000; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+  .tile { background: var(--card); border-radius: 12px; padding: 10px; }
+  .tile b { font-size: 17px; display: block; font-variant-numeric: tabular-nums; }
+  .tile i { font-style: normal; font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+  .tile.acc b { color: var(--amber); }
+  .mixrow { display: flex; gap: 8px; }
+  .mix { flex: 1; border-radius: 12px; padding: 10px 8px 8px; font-size: 10px; font-weight: 700; color: #fff; }
+  .mix small { display: block; font-weight: 400; opacity: .75; font-size: 9px; }
+  .m1 { background: linear-gradient(135deg, #5A3A8E, #2A1A36); }
+  .m2 { background: linear-gradient(135deg, #B85C38, #3C1403); }
+  .m3 { background: linear-gradient(135deg, #2E6E5E, #0F2420); }
+
+  /* Sections */
+  section { padding: 72px 0; border-top: 1px solid var(--hairline); }
+  section h2 { font-size: clamp(26px, 3.6vw, 36px); margin: 14px 0 10px; }
+  section p.sub { color: var(--sub); max-width: 60ch; margin: 0 0 40px; }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 26px;
+  }
+  .card .ico { font-size: 26px; }
+  .card h3 { font-size: 16px; margin: 12px 0 8px; letter-spacing: 1px; text-transform: uppercase; }
+  .card p { color: var(--sub); font-size: 13.5px; margin: 0; }
+  .card ul.feats { list-style: none; padding: 0; margin: 14px 0 0; color: var(--sub); font-size: 12.5px; }
+  .card ul.feats li { padding: 5px 0; border-top: 1px solid var(--hairline); }
+  .card ul.feats li::before { content: "▸ "; color: var(--amber); }
+  .card.rose { border-color: rgba(232,110,138,.35); }
+  .card.rose h3, .rose-accent { color: var(--rose); }
+  .card.rose ul.feats li::before { color: var(--rose); }
+  .badge {
+    display: inline-block; font-size: 10px; letter-spacing: 2px; padding: 4px 10px;
+    border-radius: 99px; background: var(--chip); color: var(--amber); margin-left: 8px;
+  }
+  .badge.rose { color: var(--rose); }
+
+  /* Two-column feature lead (text + mock) */
+  .lead2 { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; margin-bottom: 44px; }
+  .lead2 h2.tight { font-size: 24px; margin-top: 0; }
+  .mock { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px; }
+
+  /* Shelf scanner mock */
+  .scan-shelf { display: flex; align-items: flex-end; gap: 7px; height: 110px; padding: 0 8px; border-bottom: 3px solid var(--border); }
+  .scan-shelf i { flex: 1; border-radius: 4px 4px 0 0; background: var(--chip); }
+  .scan-shelf i:nth-child(2) { background: #3A3A44; height: 92% !important; }
+  .scan-shelf i.gold { background: var(--amber); transform: rotate(4deg); transform-origin: bottom; }
+  .scan-rows { margin-top: 16px; display: grid; gap: 8px; }
+  .scan-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--elevated); border-radius: 10px; padding: 9px 12px; font-size: 12px; }
+  .scan-row b { font-family: -apple-system, system-ui, sans-serif; font-weight: 600; }
+  .scan-row .ok { color: var(--amber); font-size: 10px; letter-spacing: 1px; white-space: nowrap; }
+
+  /* Crates mock */
+  .crate-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+  .crate { border-radius: 14px; padding: 12px 10px 10px; min-height: 96px; display: flex; flex-direction: column; justify-content: flex-end; }
+  .crate .em { font-size: 22px; margin-bottom: auto; }
+  .crate b { font-size: 12px; font-family: -apple-system, system-ui, sans-serif; }
+  .crate i { font-style: normal; font-size: 9.5px; opacity: .7; letter-spacing: 1px; }
+  .c1 { background: linear-gradient(135deg, #6B4A2A, #241505); }
+  .c2 { background: linear-gradient(135deg, #2E4E6E, #101820); }
+  .crate.new { background: transparent; border: 1.5px dashed var(--border); color: var(--sub);
+    align-items: center; justify-content: center; font-size: 11px; }
+  .rail-lbl { display: flex; justify-content: space-between; align-items: baseline; font-size: 10px; letter-spacing: 2px; color: var(--sub); margin-bottom: 8px; }
+  .rail-lbl .see { color: var(--amber); }
+  .rail { display: flex; gap: 8px; overflow: hidden; }
+  .rail i { width: 56px; height: 56px; border-radius: 8px; background: var(--chip); flex: none; }
+  .rail i:nth-child(2) { background: #2E2618; }
+  .rail i:nth-child(3) { background: #232838; }
+  .rail i:nth-child(5) { background: #26302A; }
+
+  /* Spec sheet mock */
+  .spec { display: grid; gap: 0; }
+  .spec .row { display: grid; grid-template-columns: 130px 1fr; gap: 14px; padding: 11px 4px; border-bottom: 1px solid var(--hairline); font-size: 12.5px; align-items: baseline; }
+  .spec .row:last-child { border-bottom: 0; }
+  .spec .k { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+  .spec .v { color: var(--text); }
+  .spec .v em { font-style: normal; color: var(--amber); }
+  .sparkline { vertical-align: middle; margin-left: 8px; }
+
+  /* Kindred phone mock */
+  .k-photo { border-radius: 16px; height: 150px; position: relative; overflow: hidden;
+    background: linear-gradient(150deg, #3A2030, #17171C 70%); margin-bottom: 10px; }
+  .k-photo .k-sil { position: absolute; inset: auto 0 -14px 0; text-align: center; font-size: 84px; opacity: .35; }
+  .k-photo .k-harmony { position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 6px;
+    background: rgba(14,14,17,.75); border: 1px solid rgba(232,110,138,.5); border-radius: 99px; padding: 4px 10px 4px 4px; }
+  .k-ring { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+    background: conic-gradient(var(--rose) 0 87%, var(--chip) 87% 100%); font-size: 0; }
+  .k-ring::after { content: ""; width: 16px; height: 16px; border-radius: 50%; background: #0E0E11; }
+  .k-harmony b { font-size: 11px; color: var(--rose); font-variant-numeric: tabular-nums; }
+  .k-harmony i { font-style: normal; font-size: 8px; letter-spacing: 1px; color: var(--sub); }
+  .k-name { font-family: -apple-system, system-ui, sans-serif; font-weight: 700; font-size: 16px; }
+  .k-name span { color: var(--sub); font-weight: 400; }
+  .k-looking { font-size: 10px; color: var(--rose); letter-spacing: 1px; margin: 2px 0 10px; }
+  .k-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .k-chips i { font-style: normal; font-size: 9.5px; letter-spacing: 1px; background: var(--chip);
+    border: 1px solid var(--border); border-radius: 99px; padding: 3px 9px; color: var(--text); }
+  .k-chips i.hit { border-color: rgba(232,110,138,.55); color: var(--rose); }
+  .k-vibe { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px;
+    font-size: 11px; color: var(--sub); margin-bottom: 8px; }
+  .k-vibe b { color: var(--text); font-family: -apple-system, system-ui, sans-serif; font-weight: 600; }
+  .k-ice { background: rgba(232,110,138,.08); border: 1px solid rgba(232,110,138,.3); border-radius: 12px;
+    padding: 10px 12px; font-size: 11px; color: var(--sub); }
+  .k-ice .lbl { font-size: 9px; letter-spacing: 2px; }
+  .k-actions { display: flex; justify-content: center; gap: 18px; margin-top: 12px; }
+  .k-actions span { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--chip); font-size: 17px; }
+  .k-actions span.like { background: var(--rose); color: #1C0E13; }
+
+  /* Design gallery */
+  .design-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 32px; justify-items: center; }
+  .design-item { display: grid; gap: 14px; justify-items: center; }
+  .design-item figcaption { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--sub); text-align: center; max-width: 30ch; line-height: 1.7; }
+  .design-item figcaption b { color: var(--text); display: block; letter-spacing: 3px; }
+  figure { margin: 0; }
+  .seg { display: flex; gap: 6px; margin-bottom: 12px; }
+  .seg span { font-size: 9px; letter-spacing: 2px; padding: 4px 12px; border-radius: 99px; border: 1px solid var(--border); color: var(--sub); }
+  .seg span.on { background: var(--amber); border-color: var(--amber); color: var(--on-amber); }
+  .dna-card { border-radius: 16px; padding: 16px 14px; background: linear-gradient(160deg, rgba(240,166,60,.32), #17140C 55%, #0D0D10); margin-bottom: 10px; }
+  .dna-card .lbl { font-size: 9px; }
+  .dna-card h4 { font-family: -apple-system, system-ui, sans-serif; font-size: 19px; line-height: 1.25; margin: 8px 0 10px; letter-spacing: -0.3px; }
+  .dna-row { display: grid; grid-template-columns: 76px 1fr; gap: 8px; padding: 7px 0; border-top: 1px solid rgba(242,241,236,.08); font-size: 9.5px; }
+  .dna-row .k { letter-spacing: 1.5px; color: var(--muted); }
+  .dna-row .v { color: var(--text); }
+  .dna-sup { font-size: 9.5px; color: var(--sub); margin-top: 8px; }
+  .dna-sup em { font-style: normal; color: var(--amber); }
+  .bars { display: flex; align-items: flex-end; gap: 6px; height: 74px; padding: 4px 2px 0; }
+  .bars i { flex: 1; background: var(--chip); border-radius: 4px 4px 0 0; }
+  .bars i.hot { background: var(--amber); }
+  .bars-lbls { display: flex; gap: 6px; font-size: 8px; color: var(--muted); letter-spacing: 1px; margin-top: 6px; }
+  .bars-lbls i { flex: 1; font-style: normal; text-align: center; }
+  .streak { display: flex; align-items: center; justify-content: space-between; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; margin-top: 10px; font-size: 11px; }
+  .streak b { color: var(--amber); font-variant-numeric: tabular-nums; }
+
+  /* Pricing */
+  .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; max-width: 720px; }
+  .plan { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 30px; }
+  .plan.pro { border-color: var(--amber); }
+  .plan .price { font-size: 34px; font-weight: 700; margin: 8px 0 2px; }
+  .plan .per { color: var(--muted); font-size: 12px; }
+  .plan ul { list-style: none; padding: 0; margin: 20px 0 0; color: var(--sub); font-size: 13px; }
+  .plan li { padding: 7px 0; border-bottom: 1px solid var(--hairline); }
+  .plan li::before { content: "▸ "; color: var(--amber); }
+
+  /* FAQ */
+  .faq { max-width: 720px; display: grid; gap: 10px; }
+  .faq details { background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
+  .faq summary { cursor: pointer; list-style: none; padding: 16px 20px; font-size: 14px; font-weight: 700; }
+  .faq summary::before { content: "▸ "; color: var(--amber); }
+  .faq details[open] summary::before { content: "▾ "; }
+  .faq .a { padding: 0 20px 18px 20px; color: var(--sub); font-size: 13.5px; max-width: 62ch; }
+
+  /* Waveform strip (AI section) */
+  .wave-wrap { position: relative; margin: 8px 0 44px; }
+  .wave-wrap canvas { display: block; width: 100%; height: 110px; }
+  .wave-wrap .baseline { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgba(240,166,60,.22); }
+
+  /* Full-bleed cover-wall poster band */
+  .poster-band { position: relative; overflow: hidden; border-top: 1px solid var(--hairline); }
+  .poster-band .mosaic { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: 1fr; gap: 5px; padding: 5px; }
+  .poster-band .mosaic i { border-radius: 5px; }
+  .poster-band .scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,14,17,.86) 0 8%, rgba(14,14,17,.42) 40% 55%, rgba(14,14,17,.92) 90%); }
+  .poster-band .inner { position: relative; padding: 110px 0 96px; }
+  .poster-band h2 { font-family: -apple-system, system-ui, sans-serif; font-weight: 800; font-size: clamp(38px, 6vw, 64px); letter-spacing: -1.5px; line-height: 1.0; margin: 14px 0 22px; }
+  .poster-band h2 span { color: var(--amber); }
+  .poster-band .foot-line { color: var(--sub); font-size: 14px; margin-bottom: 28px; }
+
+  /* Year in Vinyl receipt */
+  .receipt { position: relative; width: min(420px, 100%); background: #F4F1EA; color: #1a1712; border-radius: 6px;
+    padding: 34px 32px; font-size: 13.5px; box-shadow: 0 30px 70px rgba(0,0,0,.5); margin: 0 auto; }
+  .receipt::before, .receipt::after { content: ""; position: absolute; left: 0; right: 0; height: 14px; }
+  .receipt::before { top: -7px; background: radial-gradient(circle at 7px -2px, transparent 7px, #F4F1EA 8px) repeat-x; background-size: 19px 14px; }
+  .receipt::after { bottom: -7px; background: radial-gradient(circle at 7px 16px, transparent 7px, #F4F1EA 8px) repeat-x; background-size: 19px 14px; }
+  .receipt .rc-h { text-align: center; }
+  .receipt .rc-h .star { letter-spacing: 5px; font-size: 13px; }
+  .receipt .rc-h h3 { font-family: -apple-system, system-ui, sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -0.3px; margin: 8px 0 2px; }
+  .receipt .rc-h .yr { font-size: 15px; letter-spacing: 4px; }
+  .receipt .dash { border: 0; border-top: 2px dashed #b9b2a3; margin: 16px 0; }
+  .receipt .li { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; }
+  .receipt .li .d { flex: 1; border-bottom: 2px dotted #c7c0b1; margin: 0 8px 5px; }
+  .receipt .li b { font-variant-numeric: tabular-nums; }
+  .receipt .tot { display: flex; justify-content: space-between; font-family: -apple-system, system-ui, sans-serif; font-weight: 800; font-size: 18px; }
+  .receipt .barcode { display: flex; justify-content: center; gap: 2px; height: 46px; margin: 16px 0 8px; }
+  .receipt .barcode i { background: #1a1712; }
+  .receipt .rc-url { text-align: center; letter-spacing: 3px; font-size: 11px; }
+
+  footer { padding: 44px 0 64px; border-top: 1px solid var(--hairline); color: var(--muted); font-size: 12px; }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+  @media (max-width: 860px) {
+    .hero .wrap, .lead2 { grid-template-columns: 1fr; }
+    .hero { padding: 56px 0 48px; }
+    nav.top { display: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .plan { transition: border-color .2s ease; }
+    .card:hover { border-color: #3A3A44; }
+    .card.rose:hover { border-color: rgba(232,110,138,.6); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 1024 1024"><rect width="1024" height="1024" fill="#0E0E11"/><rect x="200" y="330" width="110" height="450" rx="26" fill="#26262E"/><rect x="334" y="250" width="110" height="530" rx="26" fill="#3A3A44"/><rect x="468" y="292" width="110" height="488" rx="26" fill="#F0A63C" transform="rotate(7 523 536)"/><rect x="614" y="270" width="110" height="510" rx="26" fill="#54545C"/><rect x="748" y="350" width="110" height="430" rx="26" fill="#26262E"/><rect x="160" y="796" width="704" height="26" rx="13" fill="#26262E"/></svg>
+      STACKROOM
+    </div>
+    <nav class="top">
+      <a href="#modes">Modes</a>
+      <a href="#crates">Crates</a>
+      <a href="#ai">AI</a>
+      <a href="#kindred">Kindred</a>
+      <a href="#design">Design</a>
+      <a href="#pro">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <span class="lbl" style="color: var(--muted)">Coming soon · iPhone &amp; iPad</span>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <span class="lbl">Records · Films · Books</span>
+      <h1>Every shelf you love, in one room.</h1>
+      <p class="lede">StackRoom catalogs your vinyl, your discs, and your bookcase — then gets to know them. AI that reads your shelves, mood mixes cut from your own collection, and a feed of collectors who get it.</p>
+      <div class="ctas">
+        <a class="cta" href="#pro">Get StackRoom</a>
+        <a class="cta ghost" href="#ai">See the AI</a>
+      </div>
+    </div>
+    <div class="phone" aria-hidden="true">
+      <div class="screen">
+        <div class="scr-head">
+          <span class="lbl" style="color:var(--sub)">Now Spinning</span>
+          <div class="toggle"><span class="on">♪</span><span>▸</span><span>❧</span></div>
+        </div>
+        <div class="hero-card">
+          <div class="vinyl"></div>
+          <div class="np">ON THE DECK</div>
+          <div class="title">In Rainbows</div>
+          <div class="artist">Radiohead · 2007</div>
+        </div>
+        <div class="tiles">
+          <div class="tile"><b>427</b><i>RECORDS</i></div>
+          <div class="tile"><b>1.2k</b><i>SPINS</i></div>
+          <div class="tile acc"><b>9</b><i>THIS WK</i></div>
+        </div>
+        <div class="mixrow">
+          <div class="mix m1">Rainy Day<small>10 records</small></div>
+          <div class="mix m2">High Voltage<small>10 records</small></div>
+          <div class="mix m3">Sunday Slow<small>10 records</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="modes">
+  <div class="wrap">
+    <span class="lbl">Three modes</span>
+    <h2>One toggle. Three collections.</h2>
+    <p class="sub">Flip between modes anywhere in the app — each gets its own deck, crate, wishlist, stats, and mood mixes. Nothing bleeds between them; everything feels the same.</p>
+    <div class="grid3">
+      <div class="card"><div class="ico">📀</div><h3>Music</h3><p>The full collector's toolkit, built vinyl-first.</p>
+        <ul class="feats">
+          <li>Barcode scan → the exact Discogs pressing</li>
+          <li>Log spins with date, duration, and mood</li>
+          <li>Matrix numbers, pressing plants, editions</li>
+          <li>Spin it straight into Apple Music</li>
+        </ul>
+      </div>
+      <div class="card"><div class="ico">🎬</div><h3>Movies</h3><p>Blu-ray, 4K, DVD — matched against TMDB.</p>
+        <ul class="feats">
+          <li>Marathon planner that packs your evening</li>
+          <li>Director completionism, film by film</li>
+          <li>Upgrade Bay: which DVDs deserve the 4K</li>
+          <li>Watch counts and rewatch history</li>
+        </ul>
+      </div>
+      <div class="card"><div class="ico">📚</div><h3>Books</h3><p>Your bookcase, powered by Google Books.</p>
+        <ul class="feats">
+          <li>Reading / Read / To Read shelves</li>
+          <li>Page progress and yearly reading goals</li>
+          <li>Series gap-spotting — book 3 of 5, where's 4?</li>
+          <li>Quotes worth keeping, kept</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="crates">
+  <div class="wrap">
+    <span class="lbl">Organize</span>
+    <h2>Crates you curate. Shelves that build themselves.</h2>
+    <p class="sub">The Browse view is a record store made of your own collection — your hand-built crates up top, and smart shelves the app cuts from your metadata underneath.</p>
+
+    <div class="lead2">
+      <div class="mock" aria-hidden="true">
+        <div class="crate-grid">
+          <div class="crate c1"><span class="em">🍷</span><b>Late Night Sides</b><i>23 RECORDS</i></div>
+          <div class="crate c2"><span class="em">🎧</span><b>Desert Island</b><i>12 RECORDS</i></div>
+          <div class="crate new">+ NEW CRATE</div>
+        </div>
+        <div class="rail-lbl"><span>▸ GATHERING DUST</span><span class="see">SEE ALL</span></div>
+        <div class="rail"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div>
+        <h2 class="tight">Dig like you're at the shop.</h2>
+        <p class="sub" style="margin-bottom:0">Crates are collections you name, color, and drag into order — Sunday Spins, Party Starters, To Sell. Smart shelves need zero upkeep: Recently Added, Most Played, Top Rated, Heavy Rotation, every decade you collect, your top genres — and Gathering Dust, the shelf that gently calls out what you haven't spun in six months.</p>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="card"><div class="ico">📦</div><h3>Crates</h3><p>Unlimited hand-curated collections with cover collages built from what's inside. Add from any record's menu, reorder by drag, records stay in your library when a crate goes.</p></div>
+      <div class="card"><div class="ico">🗂️</div><h3>Smart shelves</h3><p>Auto-built rails from real signals — plays, ratings, decades, genres. Your shelves reorganize themselves every time you log a spin.</p></div>
+      <div class="card"><div class="ico">💤</div><h3>Gathering Dust</h3><p>The anti-algorithm: the records you loved enough to buy and haven't touched in 180 days. Tonight's pick lives here more often than you'd think.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="ai">
+  <div class="wrap">
+    <span class="lbl">The AI layer</span>
+    <h2>It has actually listened to your records.</h2>
+    <p class="sub" style="margin-bottom:16px">StackRoom's AI judges by what your collection really sounds, plays, and reads like — not just genre tags. And every suggestion is verified against Discogs, TMDB, or Google Books before you see it.</p>
+
+    <div class="wave-wrap" aria-hidden="true">
+      <div class="baseline"></div>
+      <canvas id="wave" width="2080" height="220"></canvas>
+    </div>
+
+    <div class="lead2">
+      <div>
+        <h2 class="tight">Photograph a shelf.<br>Import the whole thing.</h2>
+        <p class="sub" style="margin-bottom:0">The Shelf Scanner reads your spines from one photo, matches every title to the real release, flags what you already own, and adds the rest in a tap. Four hundred records without typing a word.</p>
+      </div>
+      <div class="mock" aria-hidden="true">
+        <div class="scan-shelf">
+          <i style="height:70%"></i><i style="height:92%"></i><i class="gold" style="height:85%"></i><i style="height:88%"></i><i style="height:64%"></i><i style="height:78%"></i>
+        </div>
+        <div class="scan-rows">
+          <div class="scan-row"><b>Unknown Pleasures — Joy Division</b><span class="ok">✓ MATCHED</span></div>
+          <div class="scan-row"><b>Blue — Joni Mitchell</b><span class="ok">✓ MATCHED</span></div>
+          <div class="scan-row"><b>Madvillainy — Madvillain</b><span class="ok">OWNED</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="card"><div class="ico">🧬</div><h3>Taste DNA</h3><p>A written portrait of your collection — your era, your comfort zone, your blind spot, plus superlatives like "Most worn grooves." Re-sequenced daily, shareable as a Story card.</p></div>
+      <div class="card"><div class="ico">🌀</div><h3>Mood mixes</h3><p>Cozy Evening knows your Nick Drake is cozy even if the sleeve doesn't say so. Six built-in moods, unlimited custom ones with your own keywords, era, and energy. Ten picks per mood, no repeats, fresh daily.</p></div>
+      <div class="card"><div class="ico">🔮</div><h3>Recommendations</h3><p>Taste-based picks with a reason for each — and artist-by-artist gap maps that tell you which album to hunt next.</p></div>
+      <div class="card"><div class="ico">🌙</div><h3>Tonight's Pick</h3><p>A 6pm nudge from your own shelf: the record you love and haven't spun in months. It knows your morning records from your midnight ones.</p></div>
+      <div class="card"><div class="ico">📣</div><h3>Reviews &amp; feed</h3><p>Star-rated reviews of anything you collect, likes and comments, now-spinning live cards, and a feed of the collectors you follow.</p></div>
+      <div class="card rose"><div class="ico">🌹</div><h3>Kindred <span class="badge rose">OPT-IN</span></h3><p>Dating for collectors, 18+. Matched by your actual shelves — <a href="#kindred" style="color:var(--rose)">see how it works</a>.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="kindred">
+  <div class="wrap">
+    <span class="lbl rose">Kindred · Opt-in · 18+</span>
+    <h2>Swipe right on someone's record collection.</h2>
+    <p class="sub">Every dating app asks what you're like. Kindred already knows — it reads your shelves. Profiles are matched on what people actually collect, play, watch, and read, not on what they claim to.</p>
+
+    <div class="lead2">
+      <div class="phone sm" aria-hidden="true">
+        <div class="screen">
+          <div class="scr-head">
+            <span class="lbl rose">Kindred</span>
+            <span class="lbl" style="color:var(--muted)">DECK</span>
+          </div>
+          <div class="k-photo">
+            <span class="k-sil">👤</span>
+            <span class="k-harmony"><span class="k-ring"></span><span><b>87</b> <i>HARMONY</i></span></span>
+          </div>
+          <div class="k-name">Maya <span>· 29 · 6 km</span></div>
+          <div class="k-looking">CONCERT BUDDY WHO MIGHT BE MORE</div>
+          <div class="k-chips">
+            <i class="hit">Radiohead</i><i class="hit">Big Thief</i><i class="hit">Shoegaze</i><i>142 records</i>
+          </div>
+          <div class="k-vibe"><b>Why you two work:</b> You both own more Sonic Youth than is strictly advisable, and your '90s shelves overlap like a Venn diagram drawn by a fan club.</div>
+          <div class="k-ice"><span class="lbl rose">ICEBREAKER</span><br>"In Rainbows or OK Computer — and you have to defend it."</div>
+          <div class="k-actions"><span>✕</span><span class="like">♥</span></div>
+        </div>
+      </div>
+      <div>
+        <h2 class="tight">Harmony, scored from the shelves.</h2>
+        <p class="sub" style="margin-bottom:0">Your taste fingerprint — top artists, genres, directors, authors, favorite titles, the decades you collect — is scored against theirs into a harmony number from 12 to 99. Match, and the AI writes a short take on why you two fit plus an icebreaker that references the band you both love. Then the chat is yours.</p>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="card rose"><div class="ico">🫆</div><h3>Taste fingerprint</h3><p>Built from your real collection across all three modes. A film-buff bookworm and a vinyl lifer can still hit 90 — shared decades and crossover titles count.</p>
+        <ul class="feats">
+          <li>Top artists, directors &amp; authors compared</li>
+          <li>Shared titles and eras surfaced on every card</li>
+          <li>Updates as your collection grows</li>
+        </ul>
+      </div>
+      <div class="card rose"><div class="ico">💬</div><h3>Match → vibe → chat</h3><p>Mutual like opens a match with the full overlap laid out, an AI vibe blurb, and a ready-made opener.</p>
+        <ul class="feats">
+          <li>Harmony score on every match card</li>
+          <li>Icebreakers that name your shared touchstones</li>
+          <li>Built-in chat, no numbers exchanged</li>
+        </ul>
+      </div>
+      <div class="card rose"><div class="ico">🛡️</div><h3>On your terms</h3><p>Kindred is a separate, deliberate switch — collecting and dating never mix unless you say so.</p>
+        <ul class="feats">
+          <li>Strictly opt-in and 18+, off by default</li>
+          <li>Pause your profile anytime, no deleting</li>
+          <li>Set who you see: gender &amp; age range</li>
+          <li>Block and report, honored everywhere in-app</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="design">
+  <div class="wrap">
+    <span class="lbl">The design</span>
+    <h2>Built like a hi-fi console, not a spreadsheet.</h2>
+    <p class="sub">Charcoal surfaces, one amber signal, mono labels, and album art doing the talking. These are the actual screens — dark-only, because record rooms are.</p>
+    <div class="design-row">
+      <figure class="design-item">
+        <div class="phone sm" aria-hidden="true">
+          <div class="screen">
+            <div class="scr-head">
+              <span class="lbl" style="color:var(--sub)">Crate</span>
+              <span class="lbl" style="color:var(--muted)">427</span>
+            </div>
+            <div class="seg"><span class="on">BROWSE</span><span>ALL</span></div>
+            <div class="crate-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 12px;">
+              <div class="crate c1" style="min-height:84px"><span class="em">🍷</span><b>Late Night Sides</b><i>23 RECORDS</i></div>
+              <div class="crate c2" style="min-height:84px"><span class="em">🎧</span><b>Desert Island</b><i>12 RECORDS</i></div>
+            </div>
+            <div class="rail-lbl"><span>▸ RECENTLY ADDED</span><span class="see">SEE ALL</span></div>
+            <div class="rail" style="margin-bottom:10px"><i></i><i></i><i></i><i></i></div>
+            <div class="rail-lbl"><span>▸ THE '70S</span><span class="see">SEE ALL</span></div>
+            <div class="rail"><i></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+        <figcaption><b>Browse</b>your crates, then shelves that cut themselves</figcaption>
+      </figure>
+      <figure class="design-item">
+        <div class="phone sm" aria-hidden="true">
+          <div class="screen">
+            <div class="scr-head">
+              <span class="lbl" style="color:var(--sub)">Taste DNA</span>
+              <span class="lbl" style="color:var(--amber)">RESEQUENCE</span>
+            </div>
+            <div class="dna-card">
+              <span class="lbl">TASTE DNA</span>
+              <h4>The Golden-Hour Crate Digger</h4>
+              <div class="dna-row"><span class="k">ERA</span><span class="v">1972–1985, fat basslines</span></div>
+              <div class="dna-row"><span class="k">COMFORT</span><span class="v">Soul, funk &amp; Motown</span></div>
+              <div class="dna-row"><span class="k">BLIND SPOT</span><span class="v">Pure bebop — zero owned</span></div>
+            </div>
+            <div class="dna-sup">▸ <em>Most devoted:</em> Stevie Wonder, 7 records</div>
+            <div class="dna-sup">▸ <em>Guiltiest pleasure:</em> the same disco comp, 3× this week</div>
+          </div>
+        </div>
+        <figcaption><b>Taste DNA</b>the AI's portrait, shareable as a story card</figcaption>
+      </figure>
+      <figure class="design-item">
+        <div class="phone sm" aria-hidden="true">
+          <div class="screen">
+            <div class="scr-head">
+              <span class="lbl" style="color:var(--sub)">Stats</span>
+              <span class="lbl" style="color:var(--muted)">2026</span>
+            </div>
+            <div class="tiles" style="margin-bottom:12px">
+              <div class="tile"><b>1.2k</b><i>SPINS</i></div>
+              <div class="tile acc"><b>14</b><i>STREAK</i></div>
+              <div class="tile"><b>$8.4k</b><i>VALUE</i></div>
+            </div>
+            <div class="rail-lbl"><span>▸ SPINS BY DECADE</span></div>
+            <div class="bars">
+              <i style="height:28%"></i><i style="height:52%"></i><i class="hot" style="height:96%"></i><i style="height:70%"></i><i style="height:40%"></i><i style="height:22%"></i>
+            </div>
+            <div class="bars-lbls"><i>'50S</i><i>'60S</i><i>'70S</i><i>'80S</i><i>'90S</i><i>'00S</i></div>
+            <div class="streak"><span>🔥 Longest streak</span><b>31 days</b></div>
+          </div>
+        </div>
+        <figcaption><b>Stats</b>plays, streaks, value — your habit, charted</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="detail">
+  <div class="wrap">
+    <span class="lbl">Cataloging</span>
+    <h2>Liner-notes deep, when you want it.</h2>
+    <p class="sub">Add a record in two taps, or go full archivist. StackRoom keeps the fields serious collectors actually argue about — and tracks what your shelf is worth while you sleep.</p>
+
+    <div class="lead2">
+      <div class="mock" aria-hidden="true">
+        <div class="spec">
+          <div class="row"><span class="k">Pressing</span><span class="v">UK 1st · Harvest SHVL 804</span></div>
+          <div class="row"><span class="k">Matrix</span><span class="v">SHVL-804 A-2 / B-2</span></div>
+          <div class="row"><span class="k">Plant</span><span class="v">EMI Hayes, Middlesex</span></div>
+          <div class="row"><span class="k">Condition</span><span class="v">NM / VG+</span></div>
+          <div class="row"><span class="k">Found at</span><span class="v">Record fair, Utrecht · 2024</span></div>
+          <div class="row"><span class="k">Value</span><span class="v"><em>$212</em> · up 18% this year<svg class="sparkline" width="72" height="16" viewBox="0 0 72 16" aria-hidden="true"><polyline points="0,13 12,12 24,9 36,10 48,6 60,4 72,2" fill="none" stroke="#F0A63C" stroke-width="1.5"/></svg></span></div>
+        </div>
+      </div>
+      <div>
+        <h2 class="tight">Every copy has a story.<br>Keep all of it.</h2>
+        <p class="sub" style="margin-bottom:0">Pressing, matrix number, plant, edition, condition, where you found it and what you paid. Value history charts each record — and your whole collection — against the market over time, so you know what the shelf is worth and which sleeve to insure first.</p>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="card"><div class="ico">🎯</div><h3>The wishlist hunts</h3><p>Priorities from Low to Urgent, price alerts on the pressings you're chasing, and deal detection that pings you when a want drops below your target.</p></div>
+      <div class="card"><div class="ico">🏅</div><h3>Streaks &amp; badges</h3><p>Spin streaks, collection milestones, and badges that actually take effort. Your listening habit, made visible — and a little competitive.</p></div>
+      <div class="card"><div class="ico">📊</div><h3>Stats &amp; Year in Vinyl</h3><p>Plays by time of day, genre spread, decade bias, most-played artists — and a year-end Year in Vinyl recap built for sharing.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="year">
+  <div class="wrap">
+    <span class="lbl">Every December</span>
+    <h2>Your year, printed.</h2>
+    <p class="sub">When the year winds down, StackRoom prints the receipt: everything you added, spun, and chased, itemized into a Year in Vinyl card built for sharing. Movies and books get their own.</p>
+
+    <div class="lead2" style="margin-bottom:0">
+      <div class="receipt" aria-hidden="true">
+        <div class="rc-h">
+          <div class="star">★ ★ ★</div>
+          <h3>Year in Vinyl</h3>
+          <div class="yr">2 0 2 6</div>
+        </div>
+        <hr class="dash">
+        <div class="li"><span>RECORDS ADDED</span><span class="d"></span><b>128</b></div>
+        <div class="li"><span>SPINS LOGGED</span><span class="d"></span><b>1,247</b></div>
+        <div class="li"><span>HOURS ON DECK</span><span class="d"></span><b>214</b></div>
+        <div class="li"><span>TOP ARTIST</span><span class="d"></span><b>Radiohead</b></div>
+        <div class="li"><span>TOP GENRE</span><span class="d"></span><b>Soul</b></div>
+        <div class="li"><span>LONGEST STREAK</span><span class="d"></span><b>31 days</b></div>
+        <hr class="dash">
+        <div class="tot"><span>SHELF VALUE</span><span>$8,420</span></div>
+        <div class="barcode" id="barcode"></div>
+        <div class="rc-url">STACKROOM.APP</div>
+      </div>
+      <div>
+        <h2 class="tight">The recap your shelf earned.</h2>
+        <p class="sub" style="margin-bottom:0">Twelve months of plays, pickups, and streaks distilled into one story-sized card — plus the deep version in Stats: your decade bias, your time-of-day habits, the artist who quietly took over the year. Made to be posted; screenshotted anyway.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="poster-band">
+  <div class="mosaic" id="mosaic" aria-hidden="true"></div>
+  <div class="scrim"></div>
+  <div class="inner">
+    <div class="wrap">
+      <span class="lbl">The whole point</span>
+      <h2>427 records.<br><span>One room.</span></h2>
+      <div class="foot-line">Every shelf you love — records, films, books — cataloged, understood, and kept.</div>
+      <a class="cta" href="#pro">Get StackRoom</a>
+    </div>
+  </div>
+</div>
+
+<section id="pro" style="border-top:0">
+  <div class="wrap">
+    <span class="lbl">Pricing</span>
+    <h2>Free to start. Pro when you're hooked.</h2>
+    <p class="sub">Every plan includes scanning, crates, the social feed, mood mixes, and Kindred. Your data is yours on both.</p>
+    <div class="plans">
+      <div class="plan">
+        <span class="lbl" style="color:var(--sub)">Free</span>
+        <div class="price">$0</div>
+        <div class="per">forever</div>
+        <ul>
+          <li>Up to 100 records</li>
+          <li>Barcode + shelf scanning</li>
+          <li>Crates &amp; smart shelves</li>
+          <li>Mood mixes &amp; AI picks</li>
+          <li>Feed, reviews &amp; Kindred</li>
+        </ul>
+      </div>
+      <div class="plan pro">
+        <span class="lbl">Pro · 7-day free trial</span>
+        <div class="price">$2.99<span style="font-size:14px">/mo</span></div>
+        <div class="per">or $19.99/yr — save 44%</div>
+        <ul>
+          <li>Unlimited records</li>
+          <li>Movies &amp; Books modes</li>
+          <li>Share cards, Taste DNA &amp; Year in Vinyl</li>
+          <li>Value tracking &amp; price alerts</li>
+          <li>Advanced insights in every mode</li>
+          <li>Full CSV export, any time</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <span class="lbl">Questions</span>
+    <h2>The stuff collectors ask first.</h2>
+    <p class="sub" style="margin-bottom:28px">Short answers, no fine print voice.</p>
+    <div class="faq">
+      <details>
+        <summary>Do I really have to type in 400 records?</summary>
+        <div class="a">No. Photograph a shelf and the Shelf Scanner matches the spines for you; scan a barcode for one-offs; or search Discogs by name. Manual entry exists for the white labels and test pressings nothing else knows about.</div>
+      </details>
+      <details>
+        <summary>Where does the catalog data come from?</summary>
+        <div class="a">Music matches against Discogs, movies against TMDB, books against Google Books. Every AI suggestion is verified against those databases before it reaches you — no hallucinated pressings.</div>
+      </details>
+      <details>
+        <summary>Can I get my collection out?</summary>
+        <div class="a">Yes. Pro includes full CSV export of everything — records, plays, values, notes. It's your shelf; StackRoom is just the room it lives in.</div>
+      </details>
+      <details>
+        <summary>Does it work at the record fair, offline?</summary>
+        <div class="a">Yes. Your collection is cached on-device; adds and edits queue up and sync when you're back on a signal.</div>
+      </details>
+      <details>
+        <summary>Is Kindred on by default?</summary>
+        <div class="a">No — Kindred is strictly opt-in and 18+. Until you turn it on, nothing about your collection is used for matching, and your profile stays a collector profile. You can pause or leave whenever, and blocks are honored across the whole app, not just the dating side.</div>
+      </details>
+      <details>
+        <summary>What does Kindred actually share about me?</summary>
+        <div class="a">Your dating profile shows your first name, age, photos, bio, and a taste fingerprint — top artists, genres, and shared titles. Your full collection, values, and notes stay private; matches see the overlap, not the inventory.</div>
+      </details>
+      <details>
+        <summary>iPad? Android?</summary>
+        <div class="a">iPhone and iPad at launch, with a layout that actually uses the bigger screen. Android isn't on the roadmap yet.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 StackRoom · Track your collection</span>
+    <span>Built for collectors, by collectors</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    // Cover-wall mosaic (deterministic tile colors, evenly spread hues)
+    var mosaic = document.getElementById("mosaic");
+    if (mosaic) {
+      var pal = [
+        ["#C4937A","#2A1A12"],["#8FB5A5","#12241E"],["#7CA5B8","#101C24"],
+        ["#B5A5C4","#1E1828"],["#D4C5A0","#2A2413"],["#F0A63C","#3A2606"],
+        ["#5A3A8E","#1A1030"],["#2E6E5E","#0F2018"],["#B85C38","#2A1206"],
+        ["#E86E8A","#301018"]
+      ];
+      var frag = "";
+      for (var i = 0; i < 48; i++) {
+        var p = pal[((i * 3) + Math.floor(i / 12) * 7) % pal.length];
+        var ang = 110 + (i * 37) % 90;
+        frag += '<i style="background:linear-gradient(' + ang + 'deg,' + p[0] + ',' + p[1] + ')"></i>';
+      }
+      mosaic.innerHTML = frag;
+    }
+
+    // Receipt barcode (deterministic widths)
+    var bc = document.getElementById("barcode");
+    if (bc) {
+      var widths = [3,1,4,1,2,5,1,3,1,5,2,1,4,1,3,4,1,2,1,5,3,1,4,2,1,4,1,3,1,2,5,1,4,1,3];
+      var html = "";
+      for (var k = 0; k < widths.length; k++) html += '<i style="width:' + widths[k] + 'px"></i>';
+      bc.innerHTML = html;
+    }
+
+    // Waveform strip (deterministic layered sines, drawn once)
+    var cv = document.getElementById("wave");
+    if (cv && cv.getContext) {
+      var ctx = cv.getContext("2d");
+      var W = cv.width, H = cv.height, mid = H / 2;
+      var bw = 8, gap = 8, x = 0, idx = 0;
+      while (x < W) {
+        var t = idx * 0.11;
+        var env = 0.55 * Math.sin(t) + 0.28 * Math.sin(t * 2.7 + 1.1) + 0.17 * Math.sin(t * 5.3 + 0.4);
+        var edge = Math.sin(x / W * Math.PI);
+        var h = (0.12 + Math.abs(env) * 0.88) * mid * (0.3 + 0.7 * edge);
+        ctx.fillStyle = "rgba(240,166,60," + (0.35 + 0.45 * Math.abs(env)) + ")";
+        var y = mid - h, hh = h * 2, r = bw / 2;
+        ctx.beginPath();
+        ctx.moveTo(x, y + r);
+        ctx.arcTo(x, y, x + r, y, r);
+        ctx.arcTo(x + bw, y, x + bw, y + r, r);
+        ctx.lineTo(x + bw, y + hh - r);
+        ctx.arcTo(x + bw, y + hh, x + bw - r, y + hh, r);
+        ctx.arcTo(x, y + hh, x, y + hh - r, r);
+        ctx.closePath();
+        ctx.fill();
+        x += bw + gap; idx++;
+      }
+    }
+  })();
+</script>
+
+</body>
+</html>
