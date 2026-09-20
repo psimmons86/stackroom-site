@@ -1,0 +1,16 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["4Y39R5M676.com.sharespace.vinylvault"],
+        "components": [
+          { "/": "/r/*", "comment": "Record deep links" },
+          { "/": "/u/*", "comment": "Collector profile deep links" }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["4Y39R5M676.com.sharespace.vinylvault"]
+  }
+}
